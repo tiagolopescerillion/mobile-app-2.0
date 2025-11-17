@@ -1,35 +1,40 @@
 // src/App.tsx
 
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useMemo, useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
+import { HomeScreen } from './screens/HomeScreen';
+import { GetStartedScreen } from './screens/GetStartedScreen';
+import { LoginScreen } from './screens/LoginScreen';
+import { Step } from './components/StepCarousel';
+
+type Screen = 'home' | 'getStarted' | 'login';
+
+const steps: Step[] = [
+  { title: 'Step 1', subtitle: 'Get acquainted with the flow.' },
+  { title: 'Step 2', subtitle: 'Review what you need to do next.' },
+  { title: 'Step 3', subtitle: 'Stay ready for the journey ahead.' },
+];
 
 export default function MainApp() {
-  return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'right', 'bottom', 'left']}>
-      <View style={styles.container}>
-        <Text style={styles.title}>Mobile 2.0 🚀</Text>
-        <Text style={styles.subtitle}>Android + iOS safe areas + status bar ready.</Text>
-      </View>
-    </SafeAreaView>
-  );
-}
+  const [screen, setScreen] = useState<Screen>('home');
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 16,
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '600',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-  },
-});
+  const carouselSteps = useMemo(() => steps, []);
+
+  let currentScreen: JSX.Element;
+  if (screen === 'getStarted') {
+    currentScreen = <GetStartedScreen onBack={() => setScreen('home')} />;
+  } else if (screen === 'login') {
+    currentScreen = <LoginScreen onBack={() => setScreen('home')} />;
+  } else {
+    currentScreen = (
+      <HomeScreen
+        steps={carouselSteps}
+        onGetStarted={() => setScreen('getStarted')}
+        onLogin={() => setScreen('login')}
+      />
+    );
+  }
+
+  return <SafeAreaProvider>{currentScreen}</SafeAreaProvider>;
+}
