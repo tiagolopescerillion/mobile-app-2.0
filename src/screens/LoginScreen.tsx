@@ -6,9 +6,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { loginWithKeycloak } from '../services/keycloakAuthService';
 // Or create src/services/auth/keycloakAuthService.ts and export loginWithKeycloak from it.
 
-export const LoginScreen: React.FC = () => {
+interface LoginScreenProps {
+  onBack: () => void;
+  onLoginSuccess: (accessToken: string) => void;
+  onNext: () => void;
+}
+
+export const LoginScreen: React.FC<LoginScreenProps> = ({
+  onBack,
+  onLoginSuccess,
+  onNext,
+}) => {
   const [debugText, setDebugText] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const [hasSuccessfulLogin, setHasSuccessfulLogin] = useState(false);
 
   const handleLoginPress = async () => {
     setLoading(true);
@@ -31,6 +42,10 @@ export const LoginScreen: React.FC = () => {
             JSON.stringify(result.raw, null, 2),
           ].join('\n')
         );
+        setHasSuccessfulLogin(true);
+        if (result.accessToken) {
+          onLoginSuccess(result.accessToken);
+        }
       } else {
         setDebugText(
           [
@@ -42,9 +57,11 @@ export const LoginScreen: React.FC = () => {
             JSON.stringify(result.raw, null, 2),
           ].join('\n')
         );
+        setHasSuccessfulLogin(false);
       }
     } catch (e: any) {
       setDebugText(`❌ Unexpected error: ${String(e?.message ?? e)}`);
+      setHasSuccessfulLogin(false);
     } finally {
       setLoading(false);
     }
@@ -64,6 +81,19 @@ export const LoginScreen: React.FC = () => {
             onPress={handleLoginPress}
             disabled={loading}
           />
+        </View>
+
+        <View style={styles.progressRow}>
+          <View style={styles.progressButton}>
+            <Button title="Back" onPress={onBack} />
+          </View>
+          <View style={[styles.progressButton, styles.progressButtonSpacing]}>
+            <Button
+              title="Next: Fetch user"
+              onPress={onNext}
+              disabled={!hasSuccessfulLogin || loading}
+            />
+          </View>
         </View>
 
         <Text style={styles.debugTitle}>Debug output</Text>
@@ -97,6 +127,18 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     marginBottom: 16,
+  },
+  progressRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  progressButton: {
+    flex: 1,
+  },
+  progressButtonSpacing: {
+    marginLeft: 12,
   },
   debugTitle: {
     fontSize: 16,
