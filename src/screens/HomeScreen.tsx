@@ -7,10 +7,16 @@ import { StepCarousel, Step } from '../components/StepCarousel';
 type HomeScreenProps = {
   steps: Step[];
   onGetStarted: () => void;
-  onLogin: () => void;
+  onLogin: () => void | Promise<void>;
+  isLoggedIn: boolean;
 };
 
-export function HomeScreen({ steps, onGetStarted, onLogin }: HomeScreenProps) {
+export function HomeScreen({
+  steps,
+  onGetStarted,
+  onLogin,
+  isLoggedIn,
+}: HomeScreenProps) {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'right', 'bottom', 'left']}>
       <View style={styles.container}>
@@ -23,8 +29,13 @@ export function HomeScreen({ steps, onGetStarted, onLogin }: HomeScreenProps) {
           <Pressable style={[styles.button, styles.primaryButton]} onPress={onGetStarted}>
             <Text style={[styles.buttonLabel, styles.primaryLabel]}>Get Start</Text>
           </Pressable>
-          <Pressable style={[styles.button, styles.outlineButton]} onPress={onLogin}>
-            <Text style={[styles.buttonLabel, styles.outlineLabel]}>Login</Text>
+          <Pressable
+            style={[styles.button, styles.outlineButton]}
+            onPress={onLogin}
+          >
+            <Text style={[styles.buttonLabel, styles.outlineLabel]}>
+              {isLoggedIn ? 'Logout' : 'Login'}
+            </Text>
           </Pressable>
         </View>
       </View>

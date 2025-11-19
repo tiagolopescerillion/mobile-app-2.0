@@ -1,25 +1,32 @@
 // src/modules/user/LoginScreen.tsx
 import React, { useState } from 'react';
-import { View, Text, Button, ScrollView, StyleSheet } from 'react-native';
+import { Pressable, View, Text, Button, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // Update the import path if the file exists elsewhere, for example:
-import { loginWithKeycloak } from '../services/keycloakAuthService';
+import {
+  AuthTokens,
+  LogoutResult,
+  loginWithKeycloak,
+} from '../services/keycloakAuthService';
 // Or create src/services/auth/keycloakAuthService.ts and export loginWithKeycloak from it.
 
 interface LoginScreenProps {
   onBack: () => void;
-  onLoginSuccess: (accessToken: string) => void;
+  onLoginSuccess: (tokens: AuthTokens) => void;
   onNext: () => void;
+  onLogout: () => Promise<LogoutResult>;
+  isLoggedIn: boolean;
 }
 
 export const LoginScreen: React.FC<LoginScreenProps> = ({
   onBack,
   onLoginSuccess,
   onNext,
+  onLogout,
+  isLoggedIn,
 }) => {
   const [debugText, setDebugText] = useState<string>('');
   const [loading, setLoading] = useState(false);
-  const [hasSuccessfulLogin, setHasSuccessfulLogin] = useState(false);
 
   const handleLoginPress = async () => {
     setLoading(true);
@@ -39,12 +46,15 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             shortAccessToken,
             '',
             'Raw token response (stringified):',
-            JSON.stringify(result.raw, null, 2),
-          ].join('\n')
+          JSON.stringify(result.raw, null, 2),
+        ].join('\n')
         );
-        setHasSuccessfulLogin(true);
         if (result.accessToken) {
-          onLoginSuccess(result.accessToken);
+          onLoginSuccess({
+            accessToken: result.accessToken,
+            refreshToken: result.refreshToken,
+            idToken: result.idToken,
+          });
         }
       } else {
         setDebugText(
@@ -57,11 +67,35 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             JSON.stringify(result.raw, null, 2),
           ].join('\n')
         );
-        setHasSuccessfulLogin(false);
       }
     } catch (e: any) {
       setDebugText(`❌ Unexpected error: ${String(e?.message ?? e)}`);
-      setHasSuccessfulLogin(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleLogoutPress = async () => {
+    setLoading(true);
+    setDebugText('Logging out…');
+    try {
+      const result = await onLogout();
+
+      if (result.ok) {
+        setDebugText('✅ Logout SUCCESS\nYou have been signed out.');
+      } else {
+        setDebugText(
+          [
+            '❌ Logout FAILED',
+            '',
+            result.error,
+          ].join('\n')
+        );
+      }
+    } catch (error: any) {
+      setDebugText(
+        `❌ Logout failed: ${String(error?.message ?? error)}`
+      );
     } finally {
       setLoading(false);
     }
@@ -76,30 +110,46 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
         </Text>
 
         <View style={styles.buttonContainer}>
-          <Button
-            title={loading ? 'Logging in…' : 'Login with Keycloak'}
-            onPress={handleLoginPress}
-            disabled={loading}
-          />
+          {!isLoggedIn ? (
+            <Button
+              title={loading ? 'Logging in…' : 'Login with Keycloak'}
+              onPress={handleLoginPress}
+              disabled={loading}
+            />
+          ) : (
+            <Button
+              title={loading ? 'Logging out…' : 'Logout of Keycloak'}
+              onPress={handleLogoutPress}
+              disabled={loading}
+              color="#b91c1c"
+            />
+          )}
         </View>
 
         <View style={styles.progressRow}>
           <View style={styles.progressButton}>
             <Button title="Back" onPress={onBack} />
           </View>
-          <View style={[styles.progressButton, styles.progressButtonSpacing]}>
-            <Button
-              title="Next: Fetch user"
-              onPress={onNext}
-              disabled={!hasSuccessfulLogin || loading}
-            />
-          </View>
+          {isLoggedIn && (
+            <View style={[styles.progressButton, styles.progressButtonSpacing]}>
+              <Pressable
+                style={[styles.primaryNextButton, loading && styles.nextButtonDisabled]}
+                onPress={onNext}
+                disabled={loading}
+              >
+                <Text style={styles.nextButtonLabel}>Next: user details</Text>
+              </Pressable>
+            </View>
+          )}
         </View>
 
         <Text style={styles.debugTitle}>Debug output</Text>
         <ScrollView style={styles.debugBox}>
           <Text style={styles.debugText}>
-            {debugText || 'No login attempt yet.'}
+            {debugText ||
+              (isLoggedIn
+                ? 'You are currently logged in.'
+                : 'No login attempt yet.')}
           </Text>
         </ScrollView>
       </View>
@@ -139,6 +189,20 @@ const styles = StyleSheet.create({
   },
   progressButtonSpacing: {
     marginLeft: 12,
+  },
+  primaryNextButton: {
+    backgroundColor: '#2563eb',
+    paddingVertical: 14,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  nextButtonDisabled: {
+    opacity: 0.5,
+  },
+  nextButtonLabel: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
   },
   debugTitle: {
     fontSize: 16,
