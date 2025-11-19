@@ -1,10 +1,12 @@
 {
   "expo": {
     "name": "mobile-app-2.0",
-    "slug": "mobile-app-2.0",
+    "slug": "mobile-app-20",
+    "owner": "tiagolopescerillion",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+        "scheme": "mobile20",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
@@ -29,6 +31,11 @@
       "barStyle": "light-content",
       "backgroundColor": "#0F172A",
       "translucent": false
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6e08eb52-f644-4375-95f6-1c57d3c335dc"
+      }
     }
   }
 }
