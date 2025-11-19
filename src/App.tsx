@@ -8,6 +8,11 @@ import { GetStartedScreen } from './screens/GetStartedScreen';
 import { LoginScreen } from './screens/LoginScreen';
 import { UserSummaryScreen } from './screens/UserSummaryScreen';
 import { Step } from './components/StepCarousel';
+import {
+  AuthTokens,
+  LogoutResult,
+  logoutFromKeycloak,
+} from './services/keycloakAuthService';
 
 type Screen = 'home' | 'getStarted' | 'login' | 'userSummary';
 
@@ -19,9 +24,29 @@ const steps: Step[] = [
 
 export default function MainApp() {
   const [screen, setScreen] = useState<Screen>('home');
-  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [authTokens, setAuthTokens] = useState<AuthTokens | null>(null);
 
   const carouselSteps = useMemo(() => steps, []);
+
+  const isLoggedIn = Boolean(authTokens?.accessToken);
+
+  const handleLoginSuccess = (tokens: AuthTokens) => {
+    setAuthTokens(tokens);
+  };
+
+  const handleLogout = async (): Promise<LogoutResult> => {
+    let result: LogoutResult = { ok: true };
+    try {
+      if (authTokens?.refreshToken) {
+        result = await logoutFromKeycloak(authTokens.refreshToken);
+      }
+    } catch (error: any) {
+      result = { ok: false, error: String(error?.message ?? error) };
+    }
+
+    setAuthTokens(null);
+    return result;
+  };
 
   let currentScreen: React.ReactNode;
   if (screen === 'getStarted') {
@@ -30,14 +55,16 @@ export default function MainApp() {
     currentScreen = (
       <LoginScreen
         onBack={() => setScreen('home')}
-        onLoginSuccess={(token) => setAccessToken(token)}
+        onLoginSuccess={handleLoginSuccess}
         onNext={() => setScreen('userSummary')}
+        onLogout={handleLogout}
+        isLoggedIn={isLoggedIn}
       />
     );
   } else if (screen === 'userSummary') {
     currentScreen = (
       <UserSummaryScreen
-        accessToken={accessToken}
+        accessToken={authTokens?.accessToken ?? null}
         onBack={() => setScreen('login')}
       />
     );
@@ -46,7 +73,10 @@ export default function MainApp() {
       <HomeScreen
         steps={carouselSteps}
         onGetStarted={() => setScreen('getStarted')}
-        onLogin={() => setScreen('login')}
+        onLogin={() =>
+          isLoggedIn ? handleLogout() : setScreen('login')
+        }
+        isLoggedIn={isLoggedIn}
       />
     );
   }

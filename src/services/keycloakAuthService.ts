@@ -7,9 +7,19 @@ import { keycloakConfig } from '../config/authConfig';
 // In Expo Go this will look like: exp://127.0.0.1:8081 or similar.
 export const redirectUri = AuthSession.makeRedirectUri();
 
+export type AuthTokens = {
+  accessToken: string;
+  refreshToken?: string;
+  idToken?: string;
+};
+
 export type AuthDebugResult =
-  | { ok: true; accessToken: string; idToken?: string; raw: any }
+  | { ok: true; accessToken: string; refreshToken?: string; idToken?: string; raw: any }
   | { ok: false; error: string; raw?: any };
+
+export type LogoutResult =
+  | { ok: true }
+  | { ok: false; error: string };
 
 export async function loginWithKeycloak(): Promise<AuthDebugResult> {
   // 1. Build discovery document (Auth + Token endpoints)
@@ -64,6 +74,7 @@ export async function loginWithKeycloak(): Promise<AuthDebugResult> {
     return {
       ok: true,
       accessToken: tokenResult.accessToken ?? '',
+      refreshToken: tokenResult.refreshToken ?? undefined,
       idToken: tokenResult.idToken ?? undefined,
       raw: tokenResult,
     };
@@ -71,6 +82,39 @@ export async function loginWithKeycloak(): Promise<AuthDebugResult> {
     return {
       ok: false,
       error: `Token exchange failed: ${String(e?.message ?? e)}`,
+    };
+  }
+}
+
+export async function logoutFromKeycloak(
+  refreshToken?: string
+): Promise<LogoutResult> {
+  if (!refreshToken || !keycloakConfig.logoutEndpoint) {
+    return { ok: true };
+  }
+
+  try {
+    const response = await fetch(keycloakConfig.logoutEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        client_id: keycloakConfig.clientId,
+        refresh_token: refreshToken,
+      }).toString(),
+    });
+
+    if (!response.ok) {
+      const body = await response.text();
+      throw new Error(`Logout request failed: ${response.status} ${body}`);
+    }
+
+    return { ok: true };
+  } catch (error: any) {
+    return {
+      ok: false,
+      error: String(error?.message ?? error),
     };
   }
 }
