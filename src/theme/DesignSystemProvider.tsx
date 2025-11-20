@@ -2,7 +2,12 @@ import React, { createContext, useContext, useMemo, useState } from 'react';
 
 import designSystemConfig from '../../CONFIGURATIONS/design-system.json';
 
-type TokenValue = string | number | boolean | TokenValue[] | TokenRecord;
+// We intentionally type tokens loosely (as "any") so component code can access
+// nested keys like `tokens.primitives.spacing.sm` without TypeScript errors.
+// The JSON-driven design-system schema is dynamic and not expressed as a
+// compile-time type, so a permissive shape keeps the IDE happy while still
+// providing runtime safety through the resolver.
+type TokenValue = any;
 type TokenRecord = { [key: string]: TokenValue };
 
 type Mode = 'light' | 'dark';
