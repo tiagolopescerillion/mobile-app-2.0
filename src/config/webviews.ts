@@ -10,6 +10,10 @@ export type WebviewConfig = {
 
 export type WebviewConfigMap = Record<string, WebviewConfig>;
 
+export type WebviewReplacements = {
+  accountNumber?: string | null;
+};
+
 const parsedConfigs: WebviewConfigMap = webviewConfig as WebviewConfigMap;
 
 function appendFocusMode(rawUrl: string): string {
@@ -39,7 +43,24 @@ function resolveUrl(key: string, config: WebviewConfig): string | null {
   return null;
 }
 
-export function getWebviewConfiguration(key: string): (WebviewConfig & { key: string; url: string }) | null {
+function applyReplacements(url: string, replacements?: WebviewReplacements): string | null {
+  const accountPattern = /<account_no>|{account_no}/gi;
+
+  if (!accountPattern.test(url)) {
+    return url;
+  }
+
+  if (!replacements?.accountNumber) {
+    return null;
+  }
+
+  return url.replace(accountPattern, replacements.accountNumber);
+}
+
+export function getWebviewConfiguration(
+  key: string,
+  replacements?: WebviewReplacements
+): (WebviewConfig & { key: string; url: string }) | null {
   const config = parsedConfigs[key];
 
   if (!config) {
@@ -52,9 +73,15 @@ export function getWebviewConfiguration(key: string): (WebviewConfig & { key: st
     return null;
   }
 
+  const replacedUrl = applyReplacements(resolvedUrl, replacements);
+
+  if (!replacedUrl) {
+    return null;
+  }
+
   return {
     key,
-    url: resolvedUrl,
+    url: replacedUrl,
     title: config.title ?? key,
     baseKey: config.baseKey,
     baseUrl: config.baseUrl,
@@ -62,7 +89,9 @@ export function getWebviewConfiguration(key: string): (WebviewConfig & { key: st
   };
 }
 
-export function listWebviewConfigurations(): Array<WebviewConfig & { key: string; url: string }> {
+export function listWebviewConfigurations(
+  replacements?: WebviewReplacements
+): Array<WebviewConfig & { key: string; url: string }> {
   return Object.entries(parsedConfigs)
     .map(([key, value]) => {
       const url = resolveUrl(key, value);
@@ -71,9 +100,15 @@ export function listWebviewConfigurations(): Array<WebviewConfig & { key: string
         return null;
       }
 
+      const replacedUrl = applyReplacements(url, replacements);
+
+      if (!replacedUrl) {
+        return null;
+      }
+
       return {
         key,
-        url,
+        url: replacedUrl,
         title: value.title ?? key,
         baseKey: value.baseKey,
         baseUrl: value.baseUrl,

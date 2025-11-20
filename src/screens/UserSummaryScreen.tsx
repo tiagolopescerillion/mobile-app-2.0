@@ -17,6 +17,8 @@ import {
   fetchFindUser,
   RelatedParty,
 } from '../services/findUserService';
+import { useAccount } from '../context/AccountContext';
+import { useSharedWebview } from '../context/SharedWebviewProvider';
 
 interface UserSummaryScreenProps {
   accessToken: string | null;
@@ -33,6 +35,8 @@ export const UserSummaryScreen: React.FC<UserSummaryScreenProps> = ({
   const [records, setRecords] = useState<FindUserRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { selectedAccountNumber, setSelectedAccountNumber } = useAccount();
+  const { openWebview } = useSharedWebview();
 
   const loadData = useCallback(async () => {
     if (!accessToken) {
@@ -85,6 +89,14 @@ export const UserSummaryScreen: React.FC<UserSummaryScreenProps> = ({
     );
   }, [primaryRecord]);
 
+  useEffect(() => {
+    const firstAccountId = accountParties[0]?.id ?? null;
+
+    if (firstAccountId !== selectedAccountNumber) {
+      setSelectedAccountNumber(firstAccountId);
+    }
+  }, [accountParties, selectedAccountNumber, setSelectedAccountNumber]);
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'right', 'bottom', 'left']}>
       <ScrollView contentContainerStyle={styles.container}>
@@ -119,6 +131,22 @@ export const UserSummaryScreen: React.FC<UserSummaryScreenProps> = ({
             {renderContactMediums(primaryRecord.contactMedium)}
             {renderCustomerCards(customerParties)}
             {renderAccountCards(accountParties)}
+            <View style={[styles.card, styles.sectionSpacing]}>
+              <Text style={styles.cardTitle}>Self Service</Text>
+              <Text style={styles.infoText}>
+                Opens the account overview webview for the selected account.
+              </Text>
+              <Button
+                title="Open Account Overview"
+                onPress={() => openWebview('selfServiceAccountOverview')}
+                disabled={!selectedAccountNumber}
+              />
+              {!selectedAccountNumber && (
+                <Text style={[styles.infoText, styles.sectionSpacing]}>
+                  Account selection will be available after account data loads.
+                </Text>
+              )}
+            </View>
           </>
         )}
 
