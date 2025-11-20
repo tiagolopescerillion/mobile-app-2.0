@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextStyle, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { StepCarousel, Step } from '../components/StepCarousel';
@@ -21,7 +21,7 @@ export function HomeScreen({
   const { tokens } = useDesignSystem();
 
   const styles = useMemo(() => createStyles(tokens), [tokens]);
-  const pageTokens = tokens.semantic.page.default as Record<string, unknown>;
+  const pageTokens = tokens.semantic.page.default;
 
   return (
     <SafeAreaView
@@ -52,9 +52,9 @@ export function HomeScreen({
 }
 
 function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
-  const pageDefaults = tokens.semantic.page.default as Record<string, number | string>;
-  const primaryButton = tokens.semantic.button.primary as Record<string, number | string>;
-  const secondaryButton = tokens.semantic.button.secondary as Record<string, number | string>;
+  const pageDefaults = tokens.semantic.page.default;
+  const primaryButton = tokens.semantic.button.primary;
+  const secondaryButton = tokens.semantic.button.secondary;
 
   return StyleSheet.create({
     safeArea: {
@@ -62,43 +62,43 @@ function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
     },
     container: {
       flex: 1,
-      paddingHorizontal: (pageDefaults.paddingHorizontal as number) ?? tokens.primitives.spacing.lg,
-      paddingTop: (pageDefaults.paddingVertical as number) ?? tokens.primitives.spacing.lg,
-      gap: tokens.primitives.spacing.md as number,
+      paddingHorizontal: pageDefaults.paddingHorizontal ?? tokens.primitives.spacing.lg,
+      paddingTop: pageDefaults.paddingVertical ?? tokens.primitives.spacing.lg,
+      gap: tokens.primitives.spacing.md,
     },
     pageTitle: {},
     pageSubtitle: {},
     actions: {
       flexDirection: 'row',
-      gap: tokens.primitives.spacing.sm as number,
-      marginTop: tokens.primitives.spacing.sm as number,
+      gap: tokens.primitives.spacing.sm,
+      marginTop: tokens.primitives.spacing.sm,
     },
     button: {
       flex: 1,
-      borderRadius: tokens.primitives.radius.md as number,
-      paddingVertical: tokens.primitives.spacing.md as number,
+      borderRadius: tokens.primitives.radius.md,
+      paddingVertical: tokens.primitives.spacing.md,
       alignItems: 'center',
       justifyContent: 'center',
-      borderWidth: tokens.primitives.borderWidth.none as number,
+      borderWidth: tokens.primitives.borderWidth.none,
     },
     primaryButton: {
-      backgroundColor: primaryButton.backgroundDefault as string,
+      backgroundColor: primaryButton.backgroundDefault,
     },
     outlineButton: {
-      borderWidth: secondaryButton.borderWidth as number,
-      borderColor: secondaryButton.borderColor as string,
-      backgroundColor: pageDefaults.backgroundColor as string,
+      borderWidth: secondaryButton.borderWidth,
+      borderColor: secondaryButton.borderColor,
+      backgroundColor: pageDefaults.backgroundColor,
     },
     buttonLabel: {},
     primaryLabel: {
-      color: primaryButton.textColorDefault as string,
-      fontSize: primaryButton.fontSize as number,
-      fontWeight: primaryButton.fontWeight as any,
+      color: primaryButton.textColorDefault,
+      fontSize: primaryButton.fontSize,
+      fontWeight: `${primaryButton.fontWeight}` as TextStyle['fontWeight'],
     },
     outlineLabel: {
-      color: secondaryButton.borderColor as string,
-      fontSize: secondaryButton.fontSize as number,
-      fontWeight: secondaryButton.fontWeight as any,
+      color: secondaryButton.borderColor,
+      fontSize: secondaryButton.fontSize,
+      fontWeight: `${secondaryButton.fontWeight}` as TextStyle['fontWeight'],
     },
   });
 }

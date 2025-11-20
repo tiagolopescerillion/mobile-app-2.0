@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextStyle, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useDesignSystem } from '../theme/DesignSystemProvider';
@@ -16,7 +16,7 @@ export function SecondaryScreen({ heading, onBack, children }: SecondaryScreenPr
 
   return (
     <SafeAreaView
-      style={[styles.safeArea, { backgroundColor: tokens.semantic.page.default.backgroundColor as string }]}
+      style={[styles.safeArea, { backgroundColor: tokens.semantic.page.default.backgroundColor }]}
       edges={['top', 'right', 'bottom', 'left']}
     >
       <View style={styles.secondaryContainer}>
@@ -34,7 +34,7 @@ export function SecondaryScreen({ heading, onBack, children }: SecondaryScreenPr
 }
 
 function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
-  const secondaryButton = tokens.semantic.button.secondary as Record<string, number | string>;
+  const secondaryButton = tokens.semantic.button.secondary;
 
   return StyleSheet.create({
     safeArea: {
@@ -42,28 +42,28 @@ function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
     },
     secondaryContainer: {
       flex: 1,
-      paddingHorizontal: tokens.semantic.page.default.paddingHorizontal as number,
+      paddingHorizontal: tokens.semantic.page.default.paddingHorizontal,
       justifyContent: 'center',
-      gap: tokens.primitives.spacing.md as number,
+      gap: tokens.primitives.spacing.md,
     },
     secondaryHeading: {},
     secondaryCopy: {},
     button: {
       alignSelf: 'flex-start',
-      borderRadius: secondaryButton.borderRadius as number,
-      paddingVertical: secondaryButton.paddingVertical as number,
-      paddingHorizontal: secondaryButton.paddingHorizontal as number,
-      borderWidth: secondaryButton.borderWidth as number,
-      borderColor: secondaryButton.borderColor as string,
+      borderRadius: secondaryButton.borderRadius,
+      paddingVertical: secondaryButton.paddingVertical,
+      paddingHorizontal: secondaryButton.paddingHorizontal,
+      borderWidth: secondaryButton.borderWidth,
+      borderColor: secondaryButton.borderColor,
     },
     outlineButton: {
-      backgroundColor: tokens.semantic.page.default.backgroundColor as string,
+      backgroundColor: tokens.semantic.page.default.backgroundColor,
     },
     buttonLabel: {},
     outlineLabel: {
-      color: secondaryButton.borderColor as string,
-      fontSize: secondaryButton.fontSize as number,
-      fontWeight: secondaryButton.fontWeight as any,
+      color: secondaryButton.borderColor,
+      fontSize: secondaryButton.fontSize,
+      fontWeight: `${secondaryButton.fontWeight}` as TextStyle['fontWeight'],
     },
   });
 }

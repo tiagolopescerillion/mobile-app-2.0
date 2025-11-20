@@ -33,22 +33,22 @@ export function StepCarousel({ steps }: StepCarouselProps) {
 }
 
 function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
-  const cardTokens = tokens.semantic.card.default as Record<string, number | string>;
+  const cardTokens = tokens.semantic.card.default;
 
   return StyleSheet.create({
     carouselContent: {
-      gap: tokens.primitives.spacing.sm as number,
-      paddingVertical: tokens.primitives.spacing.sm as number,
-      paddingRight: tokens.primitives.spacing.xs as number,
+      gap: tokens.primitives.spacing.sm,
+      paddingVertical: tokens.primitives.spacing.sm,
+      paddingRight: tokens.primitives.spacing.xs,
     },
     card: {
       width: 240,
-      borderRadius: cardTokens.borderRadius as number,
-      backgroundColor: cardTokens.backgroundColor as string,
-      padding: cardTokens.padding as number,
-      elevation: cardTokens.elevation as number,
-      borderWidth: cardTokens.borderWidth as number,
-      borderColor: cardTokens.borderColor as string,
+      borderRadius: cardTokens.borderRadius,
+      backgroundColor: cardTokens.backgroundColor,
+      padding: cardTokens.padding,
+      elevation: cardTokens.elevation,
+      borderWidth: cardTokens.borderWidth,
+      borderColor: cardTokens.borderColor,
       shadowColor: tokens.primitives.palettes.neutral.black as string,
       shadowOpacity: 0.08,
       shadowRadius: 6,

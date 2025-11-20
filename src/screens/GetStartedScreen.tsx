@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, TextStyle, View } from 'react-native';
 
 import { SecondaryScreen } from './SecondaryScreen';
 import { useSharedWebview } from '../context/SharedWebviewProvider';
@@ -48,35 +48,35 @@ export function GetStartedScreen({ onBack }: GetStartedScreenProps) {
 }
 
 function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
-  const primaryButton = tokens.semantic.button.primary as Record<string, number | string>;
-  const secondaryButton = tokens.semantic.button.secondary as Record<string, number | string>;
+  const primaryButton = tokens.semantic.button.primary;
+  const secondaryButton = tokens.semantic.button.secondary;
 
   return StyleSheet.create({
     buttonStack: {
       alignSelf: 'stretch',
-      gap: tokens.primitives.spacing.sm as number,
+      gap: tokens.primitives.spacing.sm,
     },
     button: {
       alignSelf: 'flex-start',
-      borderRadius: primaryButton.borderRadius as number,
-      paddingVertical: primaryButton.paddingVertical as number,
-      paddingHorizontal: primaryButton.paddingHorizontal as number,
+      borderRadius: primaryButton.borderRadius,
+      paddingVertical: primaryButton.paddingVertical,
+      paddingHorizontal: primaryButton.paddingHorizontal,
     },
     buttonLabel: {
-      fontWeight: primaryButton.fontWeight as any,
-      fontSize: primaryButton.fontSize as number,
+      fontWeight: `${primaryButton.fontWeight}` as TextStyle['fontWeight'],
+      fontSize: primaryButton.fontSize,
     },
     primaryButton: {
-      backgroundColor: primaryButton.backgroundDefault as string,
+      backgroundColor: primaryButton.backgroundDefault,
     },
     primaryLabel: {
-      color: primaryButton.textColorDefault as string,
+      color: primaryButton.textColorDefault,
     },
     secondaryButton: {
-      backgroundColor: secondaryButton.backgroundDefault as string,
+      backgroundColor: secondaryButton.backgroundDefault,
     },
     secondaryLabel: {
-      color: secondaryButton.textColorDefault as string,
+      color: secondaryButton.textColorDefault,
     },
   });
 }

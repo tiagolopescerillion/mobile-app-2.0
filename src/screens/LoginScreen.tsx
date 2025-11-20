@@ -1,6 +1,6 @@
 // src/modules/user/LoginScreen.tsx
 import React, { useMemo, useState } from 'react';
-import { Pressable, View, Text, Button, ScrollView, StyleSheet } from 'react-native';
+import { Pressable, View, Text, Button, ScrollView, StyleSheet, TextStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // Update the import path if the file exists elsewhere, for example:
 import {
@@ -165,52 +165,52 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 };
 
 function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
-  const primaryButton = tokens.semantic.button.primary as Record<string, number | string>;
-  const pageDefaults = tokens.semantic.page.surface as Record<string, number | string>;
+  const primaryButton = tokens.semantic.button.primary;
+  const pageDefaults = tokens.semantic.page.surface;
 
   return StyleSheet.create({
     safeArea: {
       flex: 1,
-      backgroundColor: tokens.semantic.page.default.backgroundColor as string,
+      backgroundColor: tokens.semantic.page.default.backgroundColor,
     },
     container: {
       flex: 1,
-      paddingHorizontal: (pageDefaults.paddingHorizontal as number) ?? tokens.primitives.spacing.md,
-      paddingTop: (pageDefaults.paddingVertical as number) ?? tokens.primitives.spacing.md,
-      paddingBottom: tokens.primitives.spacing.lg as number,
-      gap: tokens.primitives.spacing.sm as number,
+      paddingHorizontal: pageDefaults.paddingHorizontal ?? tokens.primitives.spacing.md,
+      paddingTop: pageDefaults.paddingVertical ?? tokens.primitives.spacing.md,
+      paddingBottom: tokens.primitives.spacing.lg,
+      gap: tokens.primitives.spacing.sm,
     },
     title: {},
     subtitle: {},
     buttonContainer: {
-      marginBottom: tokens.primitives.spacing.md as number,
+      marginBottom: tokens.primitives.spacing.md,
     },
     progressRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: tokens.primitives.spacing.md as number,
-      gap: tokens.primitives.spacing.sm as number,
+      marginBottom: tokens.primitives.spacing.md,
+      gap: tokens.primitives.spacing.sm,
     },
     progressButton: {
       flex: 1,
     },
     progressButtonSpacing: {
-      marginLeft: tokens.primitives.spacing.sm as number,
+      marginLeft: tokens.primitives.spacing.sm,
     },
     primaryNextButton: {
-      backgroundColor: primaryButton.backgroundDefault as string,
-      paddingVertical: primaryButton.paddingVertical as number,
-      borderRadius: primaryButton.borderRadius as number,
+      backgroundColor: primaryButton.backgroundDefault,
+      paddingVertical: primaryButton.paddingVertical,
+      borderRadius: primaryButton.borderRadius,
       alignItems: 'center',
     },
     nextButtonDisabled: {
       opacity: 0.5,
     },
     nextButtonLabel: {
-      color: primaryButton.textColorDefault as string,
-      fontWeight: primaryButton.fontWeight as any,
-      fontSize: primaryButton.fontSize as number,
+      color: primaryButton.textColorDefault,
+      fontWeight: `${primaryButton.fontWeight}` as TextStyle['fontWeight'],
+      fontSize: primaryButton.fontSize,
     },
     debugTitle: {},
     debugBox: {
