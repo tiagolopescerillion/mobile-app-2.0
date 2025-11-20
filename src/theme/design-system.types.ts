@@ -8,11 +8,53 @@ export type SpacingKey = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type RadiusKey = 'sm' | 'md' | 'lg' | 'xl';
 export type BorderWidthKey = 'none' | 'thin' | 'medium';
 
+export type PaletteShades = Record<string, string>;
+
+export interface PaletteTokens {
+  primary: PaletteShades;
+  secondary: PaletteShades;
+  neutral: PaletteShades;
+  [key: string]: PaletteShades;
+}
+
+export interface ColorTokens {
+  background: string;
+  surface: string;
+  cardBackground: string;
+  border: string;
+  textPrimary: string;
+  textSecondary: string;
+  textMuted: string;
+  [key: string]: string;
+}
+
+export interface TypographyTokens {
+  fontFamilyDefault: string;
+  fontFamilyTitle: string;
+  fontFamilyMono: string;
+  titleFontSize: number;
+  descriptionFontSize: number;
+  bodyFontSize: number;
+  captionFontSize: number;
+  titleFontWeight: string | number;
+  descriptionFontWeight: string | number;
+  bodyFontWeight: string | number;
+  captionFontWeight: string | number;
+  lineHeightTight: number;
+  lineHeightDefault: number;
+  lineHeightRelaxed: number;
+  [key: string]: string | number;
+}
+
 export interface ResolvedPrimitives {
   // numeric scales
   spacing: Record<SpacingKey, number>;
   radius: Record<RadiusKey, number>;
   borderWidth: Record<BorderWidthKey, number>;
+
+  palettes: PaletteTokens;
+  colors: ColorTokens;
+  typography: TypographyTokens;
 
   // you can add more here as you start using them from code,
   // e.g. colors, palettes, typography, etc.
