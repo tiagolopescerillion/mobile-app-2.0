@@ -105,6 +105,7 @@ export function WebViewOverlay({ title, url, visible, onClose, keepMounted = fal
           </Pressable>
         </View>
         <WebView
+          key={url}
           source={{ uri: url }}
           startInLoadingState
           style={styles.webview}
