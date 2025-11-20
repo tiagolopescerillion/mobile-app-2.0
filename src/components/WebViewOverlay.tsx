@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { WebView } from 'react-native-webview';
 
@@ -8,11 +8,21 @@ export type WebViewOverlayProps = {
   url: string;
   visible: boolean;
   onClose: () => void;
+  keepMounted?: boolean;
 };
 
-export function WebViewOverlay({ title, url, visible, onClose }: WebViewOverlayProps) {
+export function WebViewOverlay({ title, url, visible, onClose, keepMounted = false }: WebViewOverlayProps) {
+  if (!visible && !keepMounted) {
+    return null;
+  }
+
   return (
-    <Modal animationType="slide" visible={visible} onRequestClose={onClose}>
+    <View
+      style={[StyleSheet.absoluteFill, styles.wrapper, visible ? styles.visible : styles.hidden]}
+      pointerEvents={visible ? 'auto' : 'none'}
+      accessibilityElementsHidden={!visible}
+      importantForAccessibility={visible ? 'yes' : 'no-hide-descendants'}
+    >
       <SafeAreaView style={styles.safeArea} edges={['top', 'right', 'bottom', 'left']}>
         <View style={styles.header}>
           <Text style={styles.title}>{title ?? 'Web Content'}</Text>
@@ -22,11 +32,21 @@ export function WebViewOverlay({ title, url, visible, onClose }: WebViewOverlayP
         </View>
         <WebView source={{ uri: url }} startInLoadingState style={styles.webview} />
       </SafeAreaView>
-    </Modal>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    backgroundColor: 'rgba(15, 23, 42, 0.95)',
+    zIndex: 50,
+  },
+  visible: {
+    opacity: 1,
+  },
+  hidden: {
+    opacity: 0,
+  },
   safeArea: {
     flex: 1,
     backgroundColor: '#0f172a',

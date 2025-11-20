@@ -1,40 +1,54 @@
-import React, { useState } from 'react';
-import { Pressable, StyleSheet, Text } from 'react-native';
+import React from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SecondaryScreen } from './SecondaryScreen';
-import { WebViewOverlay } from '../components/WebViewOverlay';
+import { useSharedWebview } from '../context/SharedWebviewProvider';
 import { getWebviewConfiguration } from '../config/webviews';
 
 type GetStartedScreenProps = {
   onBack: () => void;
 };
 
-const ecommerceWebview = getWebviewConfiguration('ecommerce');
+const homeWebview = getWebviewConfiguration('selfServiceHome');
+const browseWebview = getWebviewConfiguration('selfServiceBrowse');
 
 export function GetStartedScreen({ onBack }: GetStartedScreenProps) {
-  const [isWebviewOpen, setIsWebviewOpen] = useState(false);
+  const { openWebview } = useSharedWebview();
 
-  if (!ecommerceWebview) {
+  if (!homeWebview && !browseWebview) {
     return <SecondaryScreen heading="Get Started Home" onBack={onBack} />;
   }
 
   return (
     <SecondaryScreen heading="Get Started Home" onBack={onBack}>
-      <Pressable
-        style={[buttonStyles.button, buttonStyles.primaryButton]}
-        onPress={() => setIsWebviewOpen(true)}
-      >
-        <Text style={[buttonStyles.buttonLabel, buttonStyles.primaryLabel]}>{ecommerceWebview.title}</Text>
-      </Pressable>
+      <View style={styles.buttonStack}>
+        {homeWebview ? (
+          <Pressable
+            style={[buttonStyles.button, buttonStyles.primaryButton]}
+            onPress={() => openWebview('selfServiceHome')}
+          >
+            <Text style={[buttonStyles.buttonLabel, buttonStyles.primaryLabel]}>{homeWebview.title}</Text>
+          </Pressable>
+        ) : null}
 
-      <WebViewOverlay
-        visible={isWebviewOpen}
-        onClose={() => setIsWebviewOpen(false)}
-        url={ecommerceWebview.url}
-        title={ecommerceWebview.title}
-      />
+        {browseWebview ? (
+          <Pressable
+            style={[buttonStyles.button, buttonStyles.secondaryButton]}
+            onPress={() => openWebview('selfServiceBrowse')}
+          >
+            <Text style={[buttonStyles.buttonLabel, buttonStyles.secondaryLabel]}>{browseWebview.title}</Text>
+          </Pressable>
+        ) : null}
+      </View>
     </SecondaryScreen>
   );
 }
+
+const styles = StyleSheet.create({
+  buttonStack: {
+    alignSelf: 'stretch',
+    gap: 12,
+  },
+});
 
 const buttonStyles = StyleSheet.create({
   button: {
@@ -51,6 +65,12 @@ const buttonStyles = StyleSheet.create({
     backgroundColor: '#2563eb',
   },
   primaryLabel: {
+    color: '#ffffff',
+  },
+  secondaryButton: {
+    backgroundColor: '#0ea5e9',
+  },
+  secondaryLabel: {
     color: '#ffffff',
   },
 });
