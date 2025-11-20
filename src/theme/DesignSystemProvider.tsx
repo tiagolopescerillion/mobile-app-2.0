@@ -1,24 +1,22 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 
 import designSystemConfig from '../../CONFIGURATIONS/design-system.json';
+import {
+  Mode,
+  ResolvedPrimitives,
+  ResolvedSemantic,
+} from './design-system.types';
 
-// We intentionally type tokens loosely (as "any") so component code can access
-// nested keys like `tokens.primitives.spacing.sm` without TypeScript errors.
-// The JSON-driven design-system schema is dynamic and not expressed as a
-// compile-time type, so a permissive shape keeps the IDE happy while still
-// providing runtime safety through the resolver.
-type TokenValue = any;
+type TokenValue = unknown;
 type TokenRecord = { [key: string]: TokenValue };
-
-type Mode = 'light' | 'dark';
 
 type DesignSystemContextValue = {
   mode: Mode;
   setMode: (mode: Mode) => void;
   toggleMode: () => void;
   tokens: {
-    primitives: TokenRecord;
-    semantic: TokenRecord;
+    primitives: ResolvedPrimitives;
+    semantic: ResolvedSemantic;
   };
 };
 
@@ -77,8 +75,14 @@ function resolveSemantic(primitives: TokenRecord): TokenRecord {
 export function DesignSystemProvider({ children }: { children: React.ReactNode }) {
   const [mode, setMode] = useState<Mode>((designSystemConfig.currentMode as Mode) ?? 'light');
 
-  const primitives = useMemo(() => resolvePrimitives(mode), [mode]);
-  const semantic = useMemo(() => resolveSemantic(primitives), [primitives]);
+  const primitives = useMemo<ResolvedPrimitives>(
+    () => resolvePrimitives(mode) as ResolvedPrimitives,
+    [mode]
+  );
+  const semantic = useMemo<ResolvedSemantic>(
+    () => resolveSemantic(primitives) as ResolvedSemantic,
+    [primitives]
+  );
 
   const value: DesignSystemContextValue = useMemo(
     () => ({
