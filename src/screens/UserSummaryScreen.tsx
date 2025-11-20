@@ -3,10 +3,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
-  Button,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextStyle,
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -110,17 +111,19 @@ export const UserSummaryScreen: React.FC<UserSummaryScreenProps> = ({
         </Text>
 
         <View style={styles.actionsRow}>
-          <Button
-            title="Reload"
+          <Pressable
+            style={[styles.button, styles.primaryButton, (loading || !accessToken) && styles.buttonDisabled]}
             onPress={loadData}
             disabled={loading || !accessToken}
-            color={tokens.semantic.button.primary.backgroundDefault as string}
-          />
-          <Button
-            title="Back to Login"
+          >
+            <Text style={[styles.buttonLabel, styles.primaryButtonLabel]}>Reload</Text>
+          </Pressable>
+          <Pressable
+            style={[styles.button, styles.secondaryButton]}
             onPress={onBack}
-            color={tokens.primitives.palettes.neutral['700'] as string}
-          />
+          >
+            <Text style={[styles.buttonLabel, styles.secondaryButtonLabel]}>Back to Login</Text>
+          </Pressable>
         </View>
 
         {!accessToken && (
@@ -162,12 +165,17 @@ export const UserSummaryScreen: React.FC<UserSummaryScreenProps> = ({
                   {selectedAccountNumber ?? 'Not selected yet'}
                 </Text>
               </View>
-              <Button
-                title="Open Account Overview"
+              <Pressable
+                style={[
+                  styles.button,
+                  styles.secondaryButton,
+                  !selectedAccountNumber && styles.buttonDisabled,
+                ]}
                 onPress={() => openWebview('selfServiceAccountOverview')}
                 disabled={!selectedAccountNumber}
-                color={tokens.semantic.button.secondary.backgroundDefault as string}
-              />
+              >
+                <Text style={[styles.buttonLabel, styles.secondaryButtonLabel]}>Open Account Overview</Text>
+              </Pressable>
               {!selectedAccountNumber && (
                 <Text style={[styles.infoText, tokens.semantic.text.body, styles.sectionSpacing]}>
                   Account selection will be available after account data loads.
@@ -304,6 +312,8 @@ const Row: React.FC<RowProps> = ({ label, value, styles, tokens }) => (
 function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
   const pageDefaults = tokens.semantic.page.surface;
   const cardTokens = tokens.semantic.card.default;
+  const primaryButton = tokens.semantic.button.primary;
+  const secondaryButton = tokens.semantic.button.secondary;
 
   return StyleSheet.create({
     safeArea: {
@@ -324,6 +334,36 @@ function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
       marginTop: tokens.primitives.spacing.md,
       marginBottom: tokens.primitives.spacing.sm,
       gap: tokens.primitives.spacing.sm,
+    },
+    button: {
+      flex: 1,
+      borderRadius: primaryButton.borderRadius,
+      paddingVertical: primaryButton.paddingVertical,
+      paddingHorizontal: primaryButton.paddingHorizontal,
+      alignItems: 'center',
+    },
+    buttonDisabled: {
+      opacity: 0.5,
+    },
+    primaryButton: {
+      backgroundColor: primaryButton.backgroundDefault,
+      borderWidth: primaryButton.borderWidth,
+      borderColor: primaryButton.borderColor,
+    },
+    secondaryButton: {
+      backgroundColor: secondaryButton.backgroundDefault,
+      borderWidth: secondaryButton.borderWidth,
+      borderColor: secondaryButton.borderColor,
+    },
+    buttonLabel: {
+      fontSize: primaryButton.fontSize,
+      fontWeight: `${primaryButton.fontWeight}` as TextStyle['fontWeight'],
+    },
+    primaryButtonLabel: {
+      color: primaryButton.textColorDefault,
+    },
+    secondaryButtonLabel: {
+      color: secondaryButton.textColorDefault,
     },
     loadingRow: {
       flexDirection: 'row',

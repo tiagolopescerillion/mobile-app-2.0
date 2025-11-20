@@ -1,6 +1,6 @@
 // src/modules/user/LoginScreen.tsx
 import React, { useMemo, useState } from 'react';
-import { Pressable, View, Text, Button, ScrollView, StyleSheet, TextStyle } from 'react-native';
+import { Pressable, View, Text, ScrollView, StyleSheet, TextStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // Update the import path if the file exists elsewhere, for example:
 import {
@@ -115,25 +115,33 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
         <View style={styles.buttonContainer}>
           {!isLoggedIn ? (
-            <Button
-              title={loading ? 'Logging in…' : 'Login with Keycloak'}
+            <Pressable
+              style={[styles.button, styles.primaryButton, loading && styles.buttonDisabled]}
               onPress={handleLoginPress}
               disabled={loading}
-              color={tokens.semantic.button.primary.backgroundDefault as string}
-            />
+            >
+              <Text style={[styles.buttonLabel, styles.primaryButtonLabel]}>
+                {loading ? 'Logging in…' : 'Login with Keycloak'}
+              </Text>
+            </Pressable>
           ) : (
-            <Button
-              title={loading ? 'Logging out…' : 'Logout of Keycloak'}
+            <Pressable
+              style={[styles.button, styles.secondaryButton, loading && styles.buttonDisabled]}
               onPress={handleLogoutPress}
               disabled={loading}
-              color={tokens.primitives.palettes.secondary.dark as string}
-            />
+            >
+              <Text style={[styles.buttonLabel, styles.secondaryButtonLabel]}>
+                {loading ? 'Logging out…' : 'Logout of Keycloak'}
+              </Text>
+            </Pressable>
           )}
         </View>
 
         <View style={styles.progressRow}>
           <View style={styles.progressButton}>
-            <Button title="Back" onPress={onBack} color={tokens.primitives.palettes.neutral['700'] as string} />
+            <Pressable style={[styles.button, styles.secondaryButton]} onPress={onBack}>
+              <Text style={[styles.buttonLabel, styles.secondaryButtonLabel]}>Back</Text>
+            </Pressable>
           </View>
           {isLoggedIn && (
             <View style={[styles.progressButton, styles.progressButtonSpacing]}>
@@ -166,6 +174,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 
 function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
   const primaryButton = tokens.semantic.button.primary;
+  const secondaryButton = tokens.semantic.button.secondary;
   const pageDefaults = tokens.semantic.page.surface;
 
   return StyleSheet.create({
@@ -184,6 +193,35 @@ function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
     subtitle: {},
     buttonContainer: {
       marginBottom: tokens.primitives.spacing.md,
+    },
+    button: {
+      borderRadius: primaryButton.borderRadius,
+      paddingVertical: primaryButton.paddingVertical,
+      paddingHorizontal: primaryButton.paddingHorizontal,
+      alignItems: 'center',
+    },
+    buttonDisabled: {
+      opacity: 0.5,
+    },
+    primaryButton: {
+      backgroundColor: primaryButton.backgroundDefault,
+      borderWidth: primaryButton.borderWidth,
+      borderColor: primaryButton.borderColor,
+    },
+    secondaryButton: {
+      backgroundColor: secondaryButton.backgroundDefault,
+      borderWidth: secondaryButton.borderWidth,
+      borderColor: secondaryButton.borderColor,
+    },
+    buttonLabel: {
+      fontSize: primaryButton.fontSize,
+      fontWeight: `${primaryButton.fontWeight}` as TextStyle['fontWeight'],
+    },
+    primaryButtonLabel: {
+      color: primaryButton.textColorDefault,
+    },
+    secondaryButtonLabel: {
+      color: secondaryButton.textColorDefault,
     },
     progressRow: {
       flexDirection: 'row',
