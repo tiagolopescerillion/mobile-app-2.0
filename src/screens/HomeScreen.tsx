@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { StepCarousel, Step } from '../components/StepCarousel';
+import { useDesignSystem } from '../theme/DesignSystemProvider';
 
 type HomeScreenProps = {
   steps: Step[];
@@ -17,23 +18,30 @@ export function HomeScreen({
   onLogin,
   isLoggedIn,
 }: HomeScreenProps) {
+  const { tokens } = useDesignSystem();
+
+  const styles = useMemo(() => createStyles(tokens), [tokens]);
+  const pageTokens = tokens.semantic.page.default as Record<string, unknown>;
+
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'right', 'bottom', 'left']}>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: pageTokens.backgroundColor as string }]}
+      edges={['top', 'right', 'bottom', 'left']}
+    >
       <View style={styles.container}>
-        <Text style={styles.pageTitle}>Welcome</Text>
-        <Text style={styles.pageSubtitle}>
+        <Text style={[styles.pageTitle, tokens.semantic.text.title]}>Welcome</Text>
+        <Text style={[styles.pageSubtitle, tokens.semantic.text.description]}>
           Start with these simple steps to set everything in motion.
         </Text>
         <StepCarousel steps={steps} />
         <View style={styles.actions}>
           <Pressable style={[styles.button, styles.primaryButton]} onPress={onGetStarted}>
-            <Text style={[styles.buttonLabel, styles.primaryLabel]}>Get Start</Text>
+            <Text style={[styles.buttonLabel, styles.primaryLabel]} accessibilityRole="button">
+              Get Start
+            </Text>
           </Pressable>
-          <Pressable
-            style={[styles.button, styles.outlineButton]}
-            onPress={onLogin}
-          >
-            <Text style={[styles.buttonLabel, styles.outlineLabel]}>
+          <Pressable style={[styles.button, styles.outlineButton]} onPress={onLogin}>
+            <Text style={[styles.buttonLabel, styles.outlineLabel]} accessibilityRole="button">
               {isLoggedIn ? 'Logout' : 'Login'}
             </Text>
           </Pressable>
@@ -43,54 +51,54 @@ export function HomeScreen({
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#F6F7FB',
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 32,
-    gap: 16,
-  },
-  pageTitle: {
-    fontWeight: '700',
-    fontSize: 28,
-    color: '#0f172a',
-  },
-  pageSubtitle: {
-    color: '#475569',
-    fontSize: 16,
-    lineHeight: 22,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 12,
-  },
-  button: {
-    flex: 1,
-    borderRadius: 10,
-    paddingVertical: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primaryButton: {
-    backgroundColor: '#2563eb',
-  },
-  outlineButton: {
-    borderWidth: 2,
-    borderColor: '#2563eb',
-  },
-  buttonLabel: {
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  primaryLabel: {
-    color: '#ffffff',
-  },
-  outlineLabel: {
-    color: '#2563eb',
-  },
-});
+function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
+  const pageDefaults = tokens.semantic.page.default as Record<string, number | string>;
+  const primaryButton = tokens.semantic.button.primary as Record<string, number | string>;
+  const secondaryButton = tokens.semantic.button.secondary as Record<string, number | string>;
+
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+    },
+    container: {
+      flex: 1,
+      paddingHorizontal: (pageDefaults.paddingHorizontal as number) ?? tokens.primitives.spacing.lg,
+      paddingTop: (pageDefaults.paddingVertical as number) ?? tokens.primitives.spacing.lg,
+      gap: tokens.primitives.spacing.md as number,
+    },
+    pageTitle: {},
+    pageSubtitle: {},
+    actions: {
+      flexDirection: 'row',
+      gap: tokens.primitives.spacing.sm as number,
+      marginTop: tokens.primitives.spacing.sm as number,
+    },
+    button: {
+      flex: 1,
+      borderRadius: tokens.primitives.radius.md as number,
+      paddingVertical: tokens.primitives.spacing.md as number,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: tokens.primitives.borderWidth.none as number,
+    },
+    primaryButton: {
+      backgroundColor: primaryButton.backgroundDefault as string,
+    },
+    outlineButton: {
+      borderWidth: secondaryButton.borderWidth as number,
+      borderColor: secondaryButton.borderColor as string,
+      backgroundColor: pageDefaults.backgroundColor as string,
+    },
+    buttonLabel: {},
+    primaryLabel: {
+      color: primaryButton.textColorDefault as string,
+      fontSize: primaryButton.fontSize as number,
+      fontWeight: primaryButton.fontWeight as any,
+    },
+    outlineLabel: {
+      color: secondaryButton.borderColor as string,
+      fontSize: secondaryButton.fontSize as number,
+      fontWeight: secondaryButton.fontWeight as any,
+    },
+  });
+}
