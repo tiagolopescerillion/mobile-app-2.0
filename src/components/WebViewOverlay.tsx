@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
@@ -19,11 +19,14 @@ export type WebViewOverlayProps = {
 };
 
 export function WebViewOverlay({ title, url, visible, onClose, keepMounted = false }: WebViewOverlayProps) {
+  const loadTimingsRef = useRef<Map<string, number>>(new Map());
+
   useEffect(() => {
     logWebview(visible ? 'overlay_shown' : 'overlay_hidden', { url, title });
   }, [visible, title, url]);
 
   const handleLoadStart = (event: WebViewNavigationEvent) => {
+    loadTimingsRef.current.set(event.nativeEvent.url, Date.now());
     logWebview('load_start', {
       url: event.nativeEvent.url,
       navigationType: event.nativeEvent.navigationType,
@@ -35,9 +38,17 @@ export function WebViewOverlay({ title, url, visible, onClose, keepMounted = fal
   };
 
   const handleLoadEnd = (event: WebViewNavigationEvent) => {
+    const startedAt = loadTimingsRef.current.get(event.nativeEvent.url);
+    const durationMs = startedAt ? Date.now() - startedAt : undefined;
+
+    if (startedAt) {
+      loadTimingsRef.current.delete(event.nativeEvent.url);
+    }
+
     logWebview('load_end', {
       url: event.nativeEvent.url,
       navigationType: event.nativeEvent.navigationType,
+      durationMs,
     });
   };
 
@@ -63,8 +74,16 @@ export function WebViewOverlay({ title, url, visible, onClose, keepMounted = fal
       navigationType: request.navigationType,
       mainDocumentURL: request.mainDocumentURL,
       isTopFrame: request.isTopFrame,
+      method: request.method,
     });
     return true;
+  };
+
+  const handleResourceLoad = (event: WebViewNavigationEvent) => {
+    logWebview('resource_loaded', {
+      url: event.nativeEvent.url,
+      navigationType: event.nativeEvent.navigationType,
+    });
   };
 
   if (!visible && !keepMounted) {
@@ -95,6 +114,7 @@ export function WebViewOverlay({ title, url, visible, onClose, keepMounted = fal
           onHttpError={handleHttpError}
           onError={handleError}
           onShouldStartLoadWithRequest={handleRequest}
+          onLoad={handleResourceLoad}
         />
       </SafeAreaView>
     </View>

@@ -12,16 +12,28 @@ export type WebviewConfigMap = Record<string, WebviewConfig>;
 
 const parsedConfigs: WebviewConfigMap = webviewConfig as WebviewConfigMap;
 
+function appendFocusMode(rawUrl: string): string {
+  try {
+    const url = new URL(rawUrl);
+    url.searchParams.set('mode', 'focus');
+
+    return url.toString();
+  } catch (error) {
+    const separator = rawUrl.includes('?') ? '&' : '?';
+    return `${rawUrl}${separator}mode=focus`;
+  }
+}
+
 function resolveUrl(key: string, config: WebviewConfig): string | null {
   if (config.url) {
-    return config.url;
+    return appendFocusMode(config.url);
   }
 
   const baseFromReference = config.baseKey ? parsedConfigs[config.baseKey] : undefined;
   const baseUrl = config.baseUrl ?? baseFromReference?.url ?? baseFromReference?.baseUrl;
 
   if (baseUrl && config.path) {
-    return `${baseUrl}${config.path}`;
+    return appendFocusMode(`${baseUrl}${config.path}`);
   }
 
   return null;
