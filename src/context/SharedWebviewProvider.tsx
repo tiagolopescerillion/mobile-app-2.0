@@ -62,7 +62,12 @@ export function SharedWebviewProvider({ children }: { children: React.ReactNode 
 
       setCurrentConfigKey(configKey);
       setIsVisible(true);
-      logWebview('open_requested', { configKey, url: config.url, title: config.title });
+      logWebview('open_requested', {
+        configKey,
+        url: config.url,
+        title: config.title,
+        accountNumber: selectedAccountNumber ?? 'none',
+      });
     },
     [selectedAccountNumber]
   );

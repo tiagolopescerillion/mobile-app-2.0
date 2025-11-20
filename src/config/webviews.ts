@@ -28,6 +28,13 @@ function appendFocusMode(rawUrl: string): string {
   }
 }
 
+function combineBaseAndPath(baseUrl: string, path: string): string {
+  const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  const normalizedPath = path.startsWith('/') ? path.slice(1) : path;
+
+  return `${normalizedBase}${normalizedPath}`;
+}
+
 function resolveUrl(key: string, config: WebviewConfig): string | null {
   if (config.url) {
     return appendFocusMode(config.url);
@@ -37,7 +44,7 @@ function resolveUrl(key: string, config: WebviewConfig): string | null {
   const baseUrl = config.baseUrl ?? baseFromReference?.url ?? baseFromReference?.baseUrl;
 
   if (baseUrl && config.path) {
-    return appendFocusMode(`${baseUrl}${config.path}`);
+    return appendFocusMode(combineBaseAndPath(baseUrl, config.path));
   }
 
   return null;

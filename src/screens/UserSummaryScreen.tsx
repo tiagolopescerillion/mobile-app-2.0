@@ -136,6 +136,12 @@ export const UserSummaryScreen: React.FC<UserSummaryScreenProps> = ({
               <Text style={styles.infoText}>
                 Opens the account overview webview for the selected account.
               </Text>
+              <View style={[styles.selectedAccountCard, styles.sectionSpacing]}>
+                <Text style={styles.rowLabel}>Selected Account</Text>
+                <Text style={styles.rowValue}>
+                  {selectedAccountNumber ?? 'Not selected yet'}
+                </Text>
+              </View>
               <Button
                 title="Open Account Overview"
                 onPress={() => openWebview('selfServiceAccountOverview')}
@@ -319,5 +325,13 @@ const styles = StyleSheet.create({
   },
   sectionSpacing: {
     marginTop: 16,
+  },
+  selectedAccountCard: {
+    padding: 12,
+    backgroundColor: '#f3f4f6',
+    borderRadius: 10,
+    marginBottom: 8,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: '#e5e7eb',
   },
 });
