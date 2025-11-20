@@ -1,6 +1,6 @@
 // src/modules/user/LoginScreen.tsx
-import React, { useState } from 'react';
-import { Pressable, View, Text, Button, ScrollView, StyleSheet } from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { Pressable, View, Text, ScrollView, StyleSheet, TextStyle } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // Update the import path if the file exists elsewhere, for example:
 import {
@@ -9,6 +9,7 @@ import {
   loginWithKeycloak,
 } from '../services/keycloakAuthService';
 // Or create src/services/auth/keycloakAuthService.ts and export loginWithKeycloak from it.
+import { useDesignSystem } from '../theme/DesignSystemProvider';
 
 interface LoginScreenProps {
   onBack: () => void;
@@ -27,6 +28,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
 }) => {
   const [debugText, setDebugText] = useState<string>('');
   const [loading, setLoading] = useState(false);
+  const { tokens } = useDesignSystem();
+
+  const styles = useMemo(() => createStyles(tokens), [tokens]);
 
   const handleLoginPress = async () => {
     setLoading(true);
@@ -46,8 +50,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
             shortAccessToken,
             '',
             'Raw token response (stringified):',
-          JSON.stringify(result.raw, null, 2),
-        ].join('\n')
+            JSON.stringify(result.raw, null, 2),
+          ].join('\n')
         );
         if (result.accessToken) {
           onLoginSuccess({
@@ -104,31 +108,40 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'right', 'bottom', 'left']}>
       <View style={styles.container}>
-        <Text style={styles.title}>Keycloak Login</Text>
-        <Text style={styles.subtitle}>
+        <Text style={[styles.title, tokens.semantic.text.title]}>Keycloak Login</Text>
+        <Text style={[styles.subtitle, tokens.semantic.text.description]}>
           Press the button below to open the Keycloak login page.
         </Text>
 
         <View style={styles.buttonContainer}>
           {!isLoggedIn ? (
-            <Button
-              title={loading ? 'Logging in…' : 'Login with Keycloak'}
+            <Pressable
+              style={[styles.button, styles.primaryButton, loading && styles.buttonDisabled]}
               onPress={handleLoginPress}
               disabled={loading}
-            />
+            >
+              <Text style={[styles.buttonLabel, styles.primaryButtonLabel]}>
+                {loading ? 'Logging in…' : 'Login with Keycloak'}
+              </Text>
+            </Pressable>
           ) : (
-            <Button
-              title={loading ? 'Logging out…' : 'Logout of Keycloak'}
+            <Pressable
+              style={[styles.button, styles.secondaryButton, loading && styles.buttonDisabled]}
               onPress={handleLogoutPress}
               disabled={loading}
-              color="#b91c1c"
-            />
+            >
+              <Text style={[styles.buttonLabel, styles.secondaryButtonLabel]}>
+                {loading ? 'Logging out…' : 'Logout of Keycloak'}
+              </Text>
+            </Pressable>
           )}
         </View>
 
         <View style={styles.progressRow}>
           <View style={styles.progressButton}>
-            <Button title="Back" onPress={onBack} />
+            <Pressable style={[styles.button, styles.secondaryButton]} onPress={onBack}>
+              <Text style={[styles.buttonLabel, styles.secondaryButtonLabel]}>Back</Text>
+            </Pressable>
           </View>
           {isLoggedIn && (
             <View style={[styles.progressButton, styles.progressButtonSpacing]}>
@@ -137,15 +150,17 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
                 onPress={onNext}
                 disabled={loading}
               >
-                <Text style={styles.nextButtonLabel}>Next: user details</Text>
+                <Text style={[styles.nextButtonLabel, tokens.semantic.text.body]}>
+                  Next: user details
+                </Text>
               </Pressable>
             </View>
           )}
         </View>
 
-        <Text style={styles.debugTitle}>Debug output</Text>
+        <Text style={[styles.debugTitle, tokens.semantic.text.body]}>Debug output</Text>
         <ScrollView style={styles.debugBox}>
-          <Text style={styles.debugText}>
+          <Text style={[styles.debugText, tokens.semantic.text.caption]}>
             {debugText ||
               (isLoggedIn
                 ? 'You are currently logged in.'
@@ -157,68 +172,95 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 16,
-    paddingTop: 16,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 14,
-    marginBottom: 12,
-  },
-  buttonContainer: {
-    marginBottom: 16,
-  },
-  progressRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  progressButton: {
-    flex: 1,
-  },
-  progressButtonSpacing: {
-    marginLeft: 12,
-  },
-  primaryNextButton: {
-    backgroundColor: '#2563eb',
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  nextButtonDisabled: {
-    opacity: 0.5,
-  },
-  nextButtonLabel: {
-    color: '#fff',
-    fontWeight: '600',
-    fontSize: 16,
-  },
-  debugTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  debugBox: {
-    flex: 1,
-    borderWidth: 1,
-    borderColor: '#e5e7eb',
-    borderRadius: 8,
-    padding: 8,
-    backgroundColor: '#f9fafb',
-  },
-  debugText: {
-    fontFamily: 'System',
-    fontSize: 12,
-  },
-});
+function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
+  const primaryButton = tokens.semantic.button.primary;
+  const secondaryButton = tokens.semantic.button.secondary;
+  const pageDefaults = tokens.semantic.page.surface;
+
+  return StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: tokens.semantic.page.default.backgroundColor,
+    },
+    container: {
+      flex: 1,
+      paddingHorizontal: pageDefaults.paddingHorizontal ?? tokens.primitives.spacing.md,
+      paddingTop: pageDefaults.paddingVertical ?? tokens.primitives.spacing.md,
+      paddingBottom: tokens.primitives.spacing.lg,
+      gap: tokens.primitives.spacing.sm,
+    },
+    title: {},
+    subtitle: {},
+    buttonContainer: {
+      marginBottom: tokens.primitives.spacing.md,
+    },
+    button: {
+      borderRadius: primaryButton.borderRadius,
+      paddingVertical: primaryButton.paddingVertical,
+      paddingHorizontal: primaryButton.paddingHorizontal,
+      alignItems: 'center',
+    },
+    buttonDisabled: {
+      opacity: 0.5,
+    },
+    primaryButton: {
+      backgroundColor: primaryButton.backgroundDefault,
+      borderWidth: primaryButton.borderWidth,
+      borderColor: primaryButton.borderColor,
+    },
+    secondaryButton: {
+      backgroundColor: secondaryButton.backgroundDefault,
+      borderWidth: secondaryButton.borderWidth,
+      borderColor: secondaryButton.borderColor,
+    },
+    buttonLabel: {
+      fontSize: primaryButton.fontSize,
+      fontWeight: `${primaryButton.fontWeight}` as TextStyle['fontWeight'],
+    },
+    primaryButtonLabel: {
+      color: primaryButton.textColorDefault,
+    },
+    secondaryButtonLabel: {
+      color: secondaryButton.textColorDefault,
+    },
+    progressRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: tokens.primitives.spacing.md,
+      gap: tokens.primitives.spacing.sm,
+    },
+    progressButton: {
+      flex: 1,
+    },
+    progressButtonSpacing: {
+      marginLeft: tokens.primitives.spacing.sm,
+    },
+    primaryNextButton: {
+      backgroundColor: primaryButton.backgroundDefault,
+      paddingVertical: primaryButton.paddingVertical,
+      borderRadius: primaryButton.borderRadius,
+      alignItems: 'center',
+    },
+    nextButtonDisabled: {
+      opacity: 0.5,
+    },
+    nextButtonLabel: {
+      color: primaryButton.textColorDefault,
+      fontWeight: `${primaryButton.fontWeight}` as TextStyle['fontWeight'],
+      fontSize: primaryButton.fontSize,
+    },
+    debugTitle: {},
+    debugBox: {
+      flex: 1,
+      borderWidth: tokens.primitives.borderWidth.thin as number,
+      borderColor: tokens.primitives.colors.border as string,
+      borderRadius: tokens.primitives.radius.md as number,
+      padding: tokens.primitives.spacing.sm as number,
+      backgroundColor: tokens.primitives.colors.surface as string,
+    },
+    debugText: {
+      fontFamily: tokens.primitives.typography.fontFamilyMono as string,
+    },
+  });
+}

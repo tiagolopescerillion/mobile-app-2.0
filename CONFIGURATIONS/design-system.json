@@ -1,0 +1,279 @@
+{
+  "currentMode": "light",
+  "primitives": {
+    "light": {
+      "palettes": {
+        "primary": {
+          "lightest": "#f3e7ff",
+          "light": "#c29bff",
+          "base": "#8f48d2",
+          "dark": "#6d2ca6",
+          "darkest": "#4a1e75",
+          "contrastText": "#ffffff"
+        },
+        "secondary": {
+          "lightest": "#e0f7f4",
+          "light": "#59c8b8",
+          "base": "#119c8d",
+          "dark": "#0b6b61",
+          "darkest": "#06443c",
+          "contrastText": "#ffffff"
+        },
+        "neutral": {
+          "white": "#ffffff",
+          "50": "#f9fafb",
+          "100": "#f3f4f6",
+          "200": "#e5e7eb",
+          "300": "#d1d5db",
+          "400": "#9ca3af",
+          "500": "#6b7280",
+          "600": "#4b5563",
+          "700": "#374151",
+          "800": "#1f2933",
+          "900": "#111827",
+          "black": "#000000"
+        }
+      },
+      "gradients": {
+        "primary": {
+          "main": ["$palettes.primary.light", "$palettes.primary.dark"],
+          "soft": ["$palettes.primary.lightest", "$palettes.primary.light"]
+        },
+        "secondary": {
+          "main": ["$palettes.secondary.light", "$palettes.secondary.dark"],
+          "soft": ["$palettes.secondary.lightest", "$palettes.secondary.light"]
+        }
+      },
+      "colors": {
+        "background": "$palettes.neutral.white",
+        "surface": "$palettes.neutral.50",
+        "cardBackground": "$palettes.neutral.white",
+        "border": "$palettes.neutral.200",
+        "textPrimary": "$palettes.neutral.800",
+        "textSecondary": "$palettes.neutral.600",
+        "textMuted": "$palettes.neutral.400"
+      },
+      "radius": {
+        "sm": 4,
+        "md": 8,
+        "lg": 16,
+        "xl": 24
+      },
+      "spacing": {
+        "xs": 4,
+        "sm": 8,
+        "md": 12,
+        "lg": 16,
+        "xl": 24
+      },
+      "typography": {
+        "fontFamilyDefault": "System",
+        "fontFamilyTitle": "System",
+        "fontFamilyMono": "System",
+        "titleFontSize": 20,
+        "descriptionFontSize": 14,
+        "bodyFontSize": 16,
+        "captionFontSize": 12,
+        "titleFontWeight": "700",
+        "descriptionFontWeight": "400",
+        "bodyFontWeight": "400",
+        "captionFontWeight": "300",
+        "lineHeightTight": 18,
+        "lineHeightDefault": 22,
+        "lineHeightRelaxed": 24
+      },
+      "borderWidth": {
+        "none": 0,
+        "thin": 1,
+        "medium": 2
+      },
+      "elevation": {
+        "card": 2,
+        "modal": 8
+      }
+    },
+    "dark": {
+      "palettes": {
+        "primary": {
+          "lightest": "#f3e7ff",
+          "light": "#c29bff",
+          "base": "#8f48d2",
+          "dark": "#6d2ca6",
+          "darkest": "#4a1e75",
+          "contrastText": "#ffffff"
+        },
+        "secondary": {
+          "lightest": "#e0f7f4",
+          "light": "#59c8b8",
+          "base": "#119c8d",
+          "dark": "#0b6b61",
+          "darkest": "#06443c",
+          "contrastText": "#ffffff"
+        },
+        "neutral": {
+          "white": "#ffffff",
+          "50": "#f9fafb",
+          "100": "#f3f4f6",
+          "200": "#e5e7eb",
+          "300": "#d1d5db",
+          "400": "#9ca3af",
+          "500": "#6b7280",
+          "600": "#4b5563",
+          "700": "#111827",
+          "800": "#060b10",
+          "900": "#020509",
+          "black": "#000000"
+        }
+      },
+      "gradients": {
+        "primary": {
+          "main": ["$palettes.primary.base", "$palettes.primary.darkest"],
+          "soft": ["$palettes.primary.light", "$palettes.primary.base"]
+        },
+        "secondary": {
+          "main": ["$palettes.secondary.base", "$palettes.secondary.darkest"],
+          "soft": ["$palettes.secondary.light", "$palettes.secondary.base"]
+        }
+      },
+      "colors": {
+        "background": "$palettes.neutral.900",
+        "surface": "$palettes.neutral.800",
+        "cardBackground": "$palettes.neutral.800",
+        "border": "$palettes.neutral.700",
+        "textPrimary": "$palettes.neutral.50",
+        "textSecondary": "$palettes.neutral.200",
+        "textMuted": "$palettes.neutral.400"
+      },
+      "radius": {
+        "sm": 4,
+        "md": 8,
+        "lg": 16,
+        "xl": 24
+      },
+      "spacing": {
+        "xs": 4,
+        "sm": 8,
+        "md": 12,
+        "lg": 16,
+        "xl": 24
+      },
+      "typography": {
+        "fontFamilyDefault": "System",
+        "fontFamilyTitle": "System",
+        "fontFamilyMono": "System",
+        "titleFontSize": 20,
+        "descriptionFontSize": 14,
+        "bodyFontSize": 16,
+        "captionFontSize": 12,
+        "titleFontWeight": "700",
+        "descriptionFontWeight": "400",
+        "bodyFontWeight": "400",
+        "captionFontWeight": "300",
+        "lineHeightTight": 18,
+        "lineHeightDefault": 22,
+        "lineHeightRelaxed": 24
+      },
+      "borderWidth": {
+        "none": 0,
+        "thin": 1,
+        "medium": 2
+      },
+      "elevation": {
+        "card": 2,
+        "modal": 8
+      }
+    }
+  },
+  "semantic": {
+    "page": {
+      "default": {
+        "backgroundColor": "$colors.background",
+        "paddingHorizontal": "$spacing.lg",
+        "paddingVertical": "$spacing.lg"
+      },
+      "surface": {
+        "backgroundColor": "$colors.surface",
+        "paddingHorizontal": "$spacing.lg",
+        "paddingVertical": "$spacing.lg"
+      }
+    },
+    "card": {
+      "default": {
+        "backgroundColor": "$colors.cardBackground",
+        "borderRadius": "$radius.lg",
+        "padding": "$spacing.md",
+        "borderWidth": "$borderWidth.thin",
+        "borderColor": "$colors.border",
+        "elevation": "$elevation.card"
+      },
+      "flat": {
+        "backgroundColor": "$colors.surface",
+        "borderRadius": "$radius.md",
+        "padding": "$spacing.md",
+        "borderWidth": "$borderWidth.none",
+        "borderColor": "$colors.surface",
+        "elevation": 0
+      }
+    },
+    "text": {
+      "title": {
+        "color": "$colors.textPrimary",
+        "fontSize": "$typography.titleFontSize",
+        "fontWeight": "$typography.titleFontWeight",
+        "lineHeight": "$typography.lineHeightRelaxed",
+        "fontFamily": "$typography.fontFamilyTitle"
+      },
+      "description": {
+        "color": "$colors.textSecondary",
+        "fontSize": "$typography.descriptionFontSize",
+        "fontWeight": "$typography.descriptionFontWeight",
+        "lineHeight": "$typography.lineHeightDefault",
+        "fontFamily": "$typography.fontFamilyDefault"
+      },
+      "body": {
+        "color": "$colors.textPrimary",
+        "fontSize": "$typography.bodyFontSize",
+        "fontWeight": "$typography.bodyFontWeight",
+        "lineHeight": "$typography.lineHeightDefault",
+        "fontFamily": "$typography.fontFamilyDefault"
+      },
+      "caption": {
+        "color": "$colors.textMuted",
+        "fontSize": "$typography.captionFontSize",
+        "fontWeight": "$typography.captionFontWeight",
+        "lineHeight": "$typography.lineHeightTight",
+        "fontFamily": "$typography.fontFamilyDefault"
+      }
+    },
+    "button": {
+      "primary": {
+        "backgroundDefault": "$palettes.primary.base",
+        "backgroundPressed": "$palettes.primary.dark",
+        "backgroundDisabled": "$palettes.primary.light",
+        "textColorDefault": "$palettes.primary.contrastText",
+        "borderRadius": "$radius.md",
+        "paddingVertical": "$spacing.sm",
+        "paddingHorizontal": "$spacing.lg",
+        "borderWidth": "$borderWidth.none",
+        "borderColor": "$palettes.primary.dark",
+        "fontSize": "$typography.bodyFontSize",
+        "fontWeight": "$typography.bodyFontWeight",
+        "gradientMain": "$gradients.primary.main"
+      },
+      "secondary": {
+        "backgroundDefault": "$palettes.secondary.base",
+        "backgroundPressed": "$palettes.secondary.dark",
+        "backgroundDisabled": "$palettes.secondary.light",
+        "textColorDefault": "$palettes.secondary.contrastText",
+        "borderRadius": "$radius.md",
+        "paddingVertical": "$spacing.sm",
+        "paddingHorizontal": "$spacing.lg",
+        "borderWidth": "$borderWidth.thin",
+        "borderColor": "$colors.border",
+        "fontSize": "$typography.bodyFontSize",
+        "fontWeight": "$typography.bodyFontWeight",
+        "gradientMain": "$gradients.secondary.main"
+      }
+    }
+  }
+}

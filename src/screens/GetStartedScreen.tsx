@@ -1,8 +1,10 @@
-import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import React, { useMemo } from 'react';
+import { Pressable, StyleSheet, Text, TextStyle, View } from 'react-native';
+
 import { SecondaryScreen } from './SecondaryScreen';
 import { useSharedWebview } from '../context/SharedWebviewProvider';
 import { getWebviewConfiguration } from '../config/webviews';
+import { useDesignSystem } from '../theme/DesignSystemProvider';
 
 type GetStartedScreenProps = {
   onBack: () => void;
@@ -12,7 +14,9 @@ const homeWebview = getWebviewConfiguration('selfServiceHome');
 const browseWebview = getWebviewConfiguration('selfServiceBrowse');
 
 export function GetStartedScreen({ onBack }: GetStartedScreenProps) {
+  const { tokens } = useDesignSystem();
   const { openWebview } = useSharedWebview();
+  const styles = useMemo(() => createStyles(tokens), [tokens]);
 
   if (!homeWebview && !browseWebview) {
     return <SecondaryScreen heading="Get Started Home" onBack={onBack} />;
@@ -23,19 +27,19 @@ export function GetStartedScreen({ onBack }: GetStartedScreenProps) {
       <View style={styles.buttonStack}>
         {homeWebview ? (
           <Pressable
-            style={[buttonStyles.button, buttonStyles.primaryButton]}
+            style={[styles.button, styles.primaryButton]}
             onPress={() => openWebview('selfServiceHome')}
           >
-            <Text style={[buttonStyles.buttonLabel, buttonStyles.primaryLabel]}>{homeWebview.title}</Text>
+            <Text style={[styles.buttonLabel, styles.primaryLabel]}>{homeWebview.title}</Text>
           </Pressable>
         ) : null}
 
         {browseWebview ? (
           <Pressable
-            style={[buttonStyles.button, buttonStyles.secondaryButton]}
+            style={[styles.button, styles.secondaryButton]}
             onPress={() => openWebview('selfServiceBrowse')}
           >
-            <Text style={[buttonStyles.buttonLabel, buttonStyles.secondaryLabel]}>{browseWebview.title}</Text>
+            <Text style={[styles.buttonLabel, styles.secondaryLabel]}>{browseWebview.title}</Text>
           </Pressable>
         ) : null}
       </View>
@@ -43,34 +47,36 @@ export function GetStartedScreen({ onBack }: GetStartedScreenProps) {
   );
 }
 
-const styles = StyleSheet.create({
-  buttonStack: {
-    alignSelf: 'stretch',
-    gap: 12,
-  },
-});
+function createStyles(tokens: ReturnType<typeof useDesignSystem>['tokens']) {
+  const primaryButton = tokens.semantic.button.primary;
+  const secondaryButton = tokens.semantic.button.secondary;
 
-const buttonStyles = StyleSheet.create({
-  button: {
-    alignSelf: 'flex-start',
-    borderRadius: 10,
-    paddingVertical: 14,
-    paddingHorizontal: 18,
-  },
-  buttonLabel: {
-    fontWeight: '700',
-    fontSize: 16,
-  },
-  primaryButton: {
-    backgroundColor: '#2563eb',
-  },
-  primaryLabel: {
-    color: '#ffffff',
-  },
-  secondaryButton: {
-    backgroundColor: '#0ea5e9',
-  },
-  secondaryLabel: {
-    color: '#ffffff',
-  },
-});
+  return StyleSheet.create({
+    buttonStack: {
+      alignSelf: 'stretch',
+      gap: tokens.primitives.spacing.sm,
+    },
+    button: {
+      alignSelf: 'flex-start',
+      borderRadius: primaryButton.borderRadius,
+      paddingVertical: primaryButton.paddingVertical,
+      paddingHorizontal: primaryButton.paddingHorizontal,
+    },
+    buttonLabel: {
+      fontWeight: `${primaryButton.fontWeight}` as TextStyle['fontWeight'],
+      fontSize: primaryButton.fontSize,
+    },
+    primaryButton: {
+      backgroundColor: primaryButton.backgroundDefault,
+    },
+    primaryLabel: {
+      color: primaryButton.textColorDefault,
+    },
+    secondaryButton: {
+      backgroundColor: secondaryButton.backgroundDefault,
+    },
+    secondaryLabel: {
+      color: secondaryButton.textColorDefault,
+    },
+  });
+}

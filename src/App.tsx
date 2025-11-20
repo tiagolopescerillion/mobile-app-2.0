@@ -1,7 +1,7 @@
 // src/App.tsx
 
 import React, { useMemo, useState } from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Switch, Text, View, StyleSheet } from 'react-native';
 
 import { HomeScreen } from './screens/HomeScreen';
 import { GetStartedScreen } from './screens/GetStartedScreen';
@@ -15,6 +15,7 @@ import {
 } from './services/keycloakAuthService';
 import { SharedWebviewProvider } from './context/SharedWebviewProvider';
 import { AccountProvider } from './context/AccountContext';
+import { useDesignSystem } from './theme/DesignSystemProvider';
 
 type Screen = 'home' | 'getStarted' | 'login' | 'userSummary';
 
@@ -27,6 +28,8 @@ const steps: Step[] = [
 export default function MainApp() {
   const [screen, setScreen] = useState<Screen>('home');
   const [authTokens, setAuthTokens] = useState<AuthTokens | null>(null);
+
+  const { mode, tokens, setMode } = useDesignSystem();
 
   const carouselSteps = useMemo(() => steps, []);
 
@@ -75,19 +78,65 @@ export default function MainApp() {
       <HomeScreen
         steps={carouselSteps}
         onGetStarted={() => setScreen('getStarted')}
-        onLogin={() =>
-          isLoggedIn ? handleLogout() : setScreen('login')
-        }
+        onLogin={() => (isLoggedIn ? handleLogout() : setScreen('login'))}
         isLoggedIn={isLoggedIn}
       />
     );
   }
 
+  const containerStyle = useMemo(
+    () => [
+      styles.appContainer,
+      {
+        backgroundColor:
+          (tokens.semantic.page.default.backgroundColor as string) ?? '#ffffff',
+        paddingHorizontal:
+          (tokens.semantic.page.default.paddingHorizontal as number) ?? 16,
+        paddingVertical: (tokens.semantic.page.default.paddingVertical as number) ?? 16,
+      },
+    ],
+    [tokens.semantic.page.default]
+  );
+
   return (
     <AccountProvider>
       <SharedWebviewProvider>
-        <SafeAreaProvider>{currentScreen}</SafeAreaProvider>
+        <View style={containerStyle}>
+          <View style={styles.themeSwitchRow}>
+            <Text style={[styles.themeLabel, tokens.semantic.text.body]}>Theme</Text>
+            <Switch
+              value={mode === 'dark'}
+              onValueChange={(value) => setMode(value ? 'dark' : 'light')}
+              thumbColor={
+                mode === 'dark'
+                  ? (tokens.primitives.palettes.primary.base as string)
+                  : (tokens.primitives.palettes.neutral.white as string)
+              }
+              trackColor={{
+                false: tokens.primitives.palettes.neutral['200'] as string,
+                true: tokens.primitives.palettes.primary.light as string,
+              }}
+            />
+          </View>
+          {currentScreen}
+        </View>
       </SharedWebviewProvider>
     </AccountProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  appContainer: {
+    flex: 1,
+  },
+  themeSwitchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginBottom: 8,
+    gap: 8,
+  },
+  themeLabel: {
+    fontWeight: '600',
+  },
+});
