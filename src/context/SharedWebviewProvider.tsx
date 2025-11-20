@@ -1,6 +1,7 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { WebViewOverlay } from '../components/WebViewOverlay';
 import { getWebviewConfiguration } from '../config/webviews';
+import { logWebview } from '../utils/webviewLogger';
 
 export type SharedWebviewContextValue = {
   openWebview: (configKey: string) => void;
@@ -28,22 +29,29 @@ export function SharedWebviewProvider({ children }: { children: React.ReactNode 
     const baseConfig = getWebviewConfiguration(SELF_SERVICE_BASE_KEY);
     if (!baseConfig) {
       setCurrentConfigKey(null);
+      logWebview('warmup_skipped', { reason: 'Missing self-service base configuration' });
+      return;
     }
+
+    logWebview('warmup_initiated', { url: baseConfig.url, title: baseConfig.title });
   }, [currentConfigKey]);
 
   const openWebview = useCallback((configKey: string) => {
     const config = getWebviewConfiguration(configKey);
 
     if (!config) {
+      logWebview('open_failed', { reason: 'Configuration not found', configKey });
       return;
     }
 
     setCurrentConfigKey(configKey);
     setIsVisible(true);
+    logWebview('open_requested', { configKey, url: config.url, title: config.title });
   }, []);
 
   const closeWebview = useCallback(() => {
     setIsVisible(false);
+    logWebview('close_requested', { configKey: currentConfigKey ?? 'unknown' });
   }, []);
 
   return (

@@ -1,7 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { WebView } from 'react-native-webview';
+import {
+  WebView,
+  WebViewErrorEvent,
+  WebViewNavigationEvent,
+  WebViewProgressEvent,
+  WebViewShouldStartLoadRequest,
+} from 'react-native-webview';
+import { logWebview } from '../utils/webviewLogger';
 
 export type WebViewOverlayProps = {
   title?: string;
@@ -12,6 +19,54 @@ export type WebViewOverlayProps = {
 };
 
 export function WebViewOverlay({ title, url, visible, onClose, keepMounted = false }: WebViewOverlayProps) {
+  useEffect(() => {
+    logWebview(visible ? 'overlay_shown' : 'overlay_hidden', { url, title });
+  }, [visible, title, url]);
+
+  const handleLoadStart = (event: WebViewNavigationEvent) => {
+    logWebview('load_start', {
+      url: event.nativeEvent.url,
+      navigationType: event.nativeEvent.navigationType,
+    });
+  };
+
+  const handleLoadProgress = (event: WebViewProgressEvent) => {
+    logWebview('load_progress', { url: event.nativeEvent.url, progress: event.nativeEvent.progress });
+  };
+
+  const handleLoadEnd = (event: WebViewNavigationEvent) => {
+    logWebview('load_end', {
+      url: event.nativeEvent.url,
+      navigationType: event.nativeEvent.navigationType,
+    });
+  };
+
+  const handleHttpError = (event: WebViewErrorEvent) => {
+    logWebview('http_error', {
+      url: event.nativeEvent.url,
+      statusCode: event.nativeEvent.statusCode,
+      description: event.nativeEvent.description,
+    });
+  };
+
+  const handleError = (event: WebViewErrorEvent) => {
+    logWebview('runtime_error', {
+      url: event.nativeEvent.url,
+      code: event.nativeEvent.code,
+      description: event.nativeEvent.description,
+    });
+  };
+
+  const handleRequest = (request: WebViewShouldStartLoadRequest) => {
+    logWebview('network_request', {
+      url: request.url,
+      navigationType: request.navigationType,
+      mainDocumentURL: request.mainDocumentURL,
+      isTopFrame: request.isTopFrame,
+    });
+    return true;
+  };
+
   if (!visible && !keepMounted) {
     return null;
   }
@@ -30,7 +85,17 @@ export function WebViewOverlay({ title, url, visible, onClose, keepMounted = fal
             <Text style={styles.closeLabel}>Close</Text>
           </Pressable>
         </View>
-        <WebView source={{ uri: url }} startInLoadingState style={styles.webview} />
+        <WebView
+          source={{ uri: url }}
+          startInLoadingState
+          style={styles.webview}
+          onLoadStart={handleLoadStart}
+          onLoadProgress={handleLoadProgress}
+          onLoadEnd={handleLoadEnd}
+          onHttpError={handleHttpError}
+          onError={handleError}
+          onShouldStartLoadWithRequest={handleRequest}
+        />
       </SafeAreaView>
     </View>
   );
