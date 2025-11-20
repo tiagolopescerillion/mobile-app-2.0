@@ -5,14 +5,16 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 type SecondaryScreenProps = {
   heading: string;
   onBack: () => void;
+  children?: React.ReactNode;
 };
 
-export function SecondaryScreen({ heading, onBack }: SecondaryScreenProps) {
+export function SecondaryScreen({ heading, onBack, children }: SecondaryScreenProps) {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'right', 'bottom', 'left']}>
       <View style={styles.secondaryContainer}>
         <Text style={styles.secondaryHeading}>{heading}</Text>
         <Text style={styles.secondaryCopy}>This screen is ready for your future content.</Text>
+        {children}
         <Pressable style={[styles.button, styles.outlineButton]} onPress={onBack}>
           <Text style={[styles.buttonLabel, styles.outlineLabel]}>Back to Home</Text>
         </Pressable>

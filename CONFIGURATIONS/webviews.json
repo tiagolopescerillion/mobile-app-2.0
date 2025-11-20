@@ -1,0 +1,22 @@
+{
+  "selfServiceBase": {
+    "title": "Self Service Base",
+    "url": "https://lonlinux13.cerillion.com:45040/selfcare-ng/selfcare/",
+    "baseUrl": "https://lonlinux13.cerillion.com:45040/selfcare-ng/selfcare/"
+  },
+  "selfServiceHome": {
+    "title": "Self Service Home",
+    "path": "ecomm/home",
+    "baseKey": "selfServiceBase"
+  },
+  "selfServiceBrowse": {
+    "title": "Self Service Browse",
+    "path": "ecomm/home/browse?isBundle=false&category.id=SECTION-1000000021",
+    "baseKey": "selfServiceBase"
+  },
+  "selfServiceAccountOverview": {
+    "title": "Account Overview",
+    "path": "my-account/overview/<account_no>",
+    "baseKey": "selfServiceBase"
+  }
+}

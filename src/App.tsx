@@ -13,6 +13,8 @@ import {
   LogoutResult,
   logoutFromKeycloak,
 } from './services/keycloakAuthService';
+import { SharedWebviewProvider } from './context/SharedWebviewProvider';
+import { AccountProvider } from './context/AccountContext';
 
 type Screen = 'home' | 'getStarted' | 'login' | 'userSummary';
 
@@ -81,5 +83,11 @@ export default function MainApp() {
     );
   }
 
-  return <SafeAreaProvider>{currentScreen}</SafeAreaProvider>;
+  return (
+    <AccountProvider>
+      <SharedWebviewProvider>
+        <SafeAreaProvider>{currentScreen}</SafeAreaProvider>
+      </SharedWebviewProvider>
+    </AccountProvider>
+  );
 }
