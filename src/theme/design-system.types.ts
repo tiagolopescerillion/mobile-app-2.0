@@ -45,7 +45,7 @@ export interface TypographyTokens {
   lineHeightTight: number;
   lineHeightDefault: number;
   lineHeightRelaxed: number;
-  [key: string]: string | number;
+  [key: string]: string | number | undefined;
 }
 
 export interface ResolvedPrimitives {
