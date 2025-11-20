@@ -1,3 +1,5 @@
+import { TextStyle } from 'react-native';
+
 export type Mode = 'light' | 'dark';
 
 /**
@@ -36,10 +38,10 @@ export interface TypographyTokens {
   descriptionFontSize: number;
   bodyFontSize: number;
   captionFontSize: number;
-  titleFontWeight: string | number;
-  descriptionFontWeight: string | number;
-  bodyFontWeight: string | number;
-  captionFontWeight: string | number;
+  titleFontWeight: TextStyle['fontWeight'];
+  descriptionFontWeight: TextStyle['fontWeight'];
+  bodyFontWeight: TextStyle['fontWeight'];
+  captionFontWeight: TextStyle['fontWeight'];
   lineHeightTight: number;
   lineHeightDefault: number;
   lineHeightRelaxed: number;
@@ -91,7 +93,7 @@ export interface ButtonVariantTokens {
   borderWidth: number;
   borderColor: string;
   fontSize: number;
-  fontWeight: string | number;
+  fontWeight: TextStyle['fontWeight'];
   gradientMain?: string[]; // optional
 }
 
@@ -104,7 +106,7 @@ export interface ButtonSemanticTokens {
 export interface TextVariantTokens {
   color: string;
   fontSize: number;
-  fontWeight: string | number;
+  fontWeight: TextStyle['fontWeight'];
   lineHeight: number;
   fontFamily: string;
 }
