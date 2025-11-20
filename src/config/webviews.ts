@@ -35,21 +35,6 @@ function combineBaseAndPath(baseUrl: string, path: string): string {
   return `${normalizedBase}${normalizedPath}`;
 }
 
-function resolveUrl(key: string, config: WebviewConfig): string | null {
-  if (config.url) {
-    return appendFocusMode(config.url);
-  }
-
-  const baseFromReference = config.baseKey ? parsedConfigs[config.baseKey] : undefined;
-  const baseUrl = config.baseUrl ?? baseFromReference?.url ?? baseFromReference?.baseUrl;
-
-  if (baseUrl && config.path) {
-    return appendFocusMode(combineBaseAndPath(baseUrl, config.path));
-  }
-
-  return null;
-}
-
 function applyReplacements(url: string, replacements?: WebviewReplacements): string | null {
   const accountPattern = /<account_no>|{account_no}/gi;
 
@@ -64,6 +49,26 @@ function applyReplacements(url: string, replacements?: WebviewReplacements): str
   return url.replace(accountPattern, replacements.accountNumber);
 }
 
+function resolveUrl(key: string, config: WebviewConfig, replacements?: WebviewReplacements): string | null {
+  const baseFromReference = config.baseKey ? parsedConfigs[config.baseKey] : undefined;
+  const baseUrl = config.baseUrl ?? baseFromReference?.url ?? baseFromReference?.baseUrl;
+
+  const rawUrl =
+    config.url ?? (baseUrl && config.path ? combineBaseAndPath(baseUrl, config.path) : null);
+
+  if (!rawUrl) {
+    return null;
+  }
+
+  const replacedUrl = applyReplacements(rawUrl, replacements);
+
+  if (!replacedUrl) {
+    return null;
+  }
+
+  return appendFocusMode(replacedUrl);
+}
+
 export function getWebviewConfiguration(
   key: string,
   replacements?: WebviewReplacements
@@ -74,21 +79,15 @@ export function getWebviewConfiguration(
     return null;
   }
 
-  const resolvedUrl = resolveUrl(key, config);
+  const resolvedUrl = resolveUrl(key, config, replacements);
 
   if (!resolvedUrl) {
     return null;
   }
 
-  const replacedUrl = applyReplacements(resolvedUrl, replacements);
-
-  if (!replacedUrl) {
-    return null;
-  }
-
   return {
     key,
-    url: replacedUrl,
+    url: resolvedUrl,
     title: config.title ?? key,
     baseKey: config.baseKey,
     baseUrl: config.baseUrl,
@@ -101,21 +100,15 @@ export function listWebviewConfigurations(
 ): Array<WebviewConfig & { key: string; url: string }> {
   return Object.entries(parsedConfigs)
     .map(([key, value]) => {
-      const url = resolveUrl(key, value);
+      const url = resolveUrl(key, value, replacements);
 
       if (!url) {
         return null;
       }
 
-      const replacedUrl = applyReplacements(url, replacements);
-
-      if (!replacedUrl) {
-        return null;
-      }
-
       return {
         key,
-        url: replacedUrl,
+        url,
         title: value.title ?? key,
         baseKey: value.baseKey,
         baseUrl: value.baseUrl,
